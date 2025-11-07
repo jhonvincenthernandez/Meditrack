@@ -47,6 +47,7 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
    🔐 AUTHENTICATION
 ======================= */
 $router->match('/auth/login', 'AuthController::login', ['GET', 'POST']);
+$router->match('/auth/register', 'AuthController::register', ['GET', 'POST']);
 $router->get('/auth/logout', 'AuthController::logout');
 
 /* =======================
@@ -120,6 +121,8 @@ $router->get('/schedules/doctor_delete/{id}', 'ScheduleController::doctor_delete
 // Add these under appointment routes
 $router->get('/appointments/getDoctorDates/{doctor_id}', 'AppointmentController::getDoctorDates');
 $router->get('/appointments/getAvailableSlots/{doctor_id}/{date}', 'AppointmentController::getAvailableSlots');
+$router->get('/test', 'Welcome::testEmail');
+
 
 
 

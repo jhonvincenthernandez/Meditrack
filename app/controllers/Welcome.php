@@ -6,5 +6,13 @@ class Welcome extends Controller {
 		$this->call->library('Ember');
 		$this->call->view('welcome_page');
 	}
+
+	public function testEmail()
+	{
+		if (sendMail('jhonvincenthernandez1@gmail.com', 'MediTrack Test', 'This is a test email from LavaLust MediTrack+')) {
+			echo "✅ Email sent successfully!";
+			exit;
+		} 
+	}
 }
 ?>

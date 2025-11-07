@@ -10,7 +10,10 @@
 <body class="login-page">
 
   <div class="login-card">
-  <h3 class="mb-4 text-center text-accent">MediTrack+ Login</h3>
+  <h3 class="mb-2 text-center text-accent">MediTrack+ Login</h3>
+  <?php if(!empty($reg_success)): ?>
+    <div class="alert alert-success text-center"><?= htmlspecialchars($reg_success) ?></div>
+  <?php endif; ?>
 
     <?php if(isset($error)): ?>
       <div class="alert alert-danger text-center"><?= $error ?></div>
@@ -27,6 +30,10 @@
       </div>
       <button type="submit" class="btn btn-login w-100 mt-3">Login</button>
     </form>
+
+    <div class="text-center mt-3">
+      <a href="<?= site_url('auth/register'); ?>" class="text-decoration-none">Need an account? Register</a>
+    </div>
 
     <p class="text-center mt-4 small text-muted">© <?= date('Y'); ?> MediTrack+. All rights reserved.</p>
   </div>
