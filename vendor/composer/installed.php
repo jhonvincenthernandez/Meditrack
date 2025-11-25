@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
-        'name' => 'vincenthernandez/finalcurrrentlava-lustmeditrack',
+        'name' => 'hernandez/crud',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b3661fb687c6222507928a598fd9459939f204eb',
+        'reference' => 'f56f512978d3f9ce3ba56a2fcfbcbf980317c0cd',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        'vincenthernandez/finalcurrrentlava-lustmeditrack' => array(
+        'hernandez/crud' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b3661fb687c6222507928a598fd9459939f204eb',
+            'reference' => 'f56f512978d3f9ce3ba56a2fcfbcbf980317c0cd',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
