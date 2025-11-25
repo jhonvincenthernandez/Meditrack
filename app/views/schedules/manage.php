@@ -10,13 +10,16 @@
 </head>
 <body>
 
+<!-- Sidebar -->
+<?php include APP_DIR . 'views/_sidebar.php'; ?>
+
 <div class="main">
-  <div class="topbar d-flex justify-content-between align-items-center">
-    <h4 class="ms-3">My Schedule Slots</h4>
-    <div>
-      <a href="<?= base_url(); ?>/dashboard_doctor" class="btn btn-outline-secondary">Back to Dashboard</a>
-    </div>
-  </div>
+  <?php
+    $topbar_title = 'My Schedule Slots';
+    $topbar_right = '<a href="' . base_url() . '/dashboard_doctor" class="btn btn-outline-secondary">Back to Dashboard</a>';
+    $topbar_class = 'd-flex justify-content-between align-items-center';
+    include APP_DIR . 'views/_topbar.php';
+  ?>
 
   <div class="p-4">
     <?php if (!empty($flash_warning)): ?>
@@ -64,8 +67,8 @@
               $dateText = htmlspecialchars(date('M d, Y', strtotime($s['date'])));
               $timeText = htmlspecialchars(substr($s['start_time'],0,5) . ' - ' . substr($s['end_time'],0,5));
               $isBooked = (int)($s['is_booked'] ?? 0) === 1;
-              $slotEndTs = strtotime(($s['date'] ?? '') . ' ' . ($s['end_time'] ?? '00:00:00'));
-              $isPast = $slotEndTs !== false && $slotEndTs < time();
+              $slotStartTs = strtotime(($s['date'] ?? '') . ' ' . ($s['start_time'] ?? '00:00:00'));
+              $isPast = $slotStartTs !== false && $slotStartTs <= time();
             ?>
             <tr>
               <td><?= $dateText ?></td>

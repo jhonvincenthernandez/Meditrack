@@ -116,7 +116,49 @@ class ScheduleController extends Controller {
         $this->lauth->require_login();
         $this->lauth->require_role('admin');
 
-    $data['slots'] = $this->ScheduleModel->all_slots_with_doctor();
+        $slots = $this->ScheduleModel->all_slots_with_doctor();
+
+        $grouped = [
+            'available' => [],
+            'booked' => [],
+            'past' => [],
+            'completed' => [],
+            'cancelled' => [],
+        ];
+
+        $nowTs = time();
+
+        foreach ($slots as $slot) {
+            $apptStatus = strtolower($slot['appt_status'] ?? '');
+            $isBooked = !empty($slot['is_booked']);
+            $startTs = strtotime(($slot['date'] ?? '') . ' ' . ($slot['start_time'] ?? ''));
+
+            if ($apptStatus === 'completed') {
+                $grouped['completed'][] = $slot;
+                continue;
+            }
+
+            if ($apptStatus === 'cancelled') {
+                $grouped['cancelled'][] = $slot;
+                continue;
+            }
+
+            if ($startTs !== false && $startTs <= $nowTs) {
+                $grouped['past'][] = $slot;
+                continue;
+            }
+
+            if ($isBooked) {
+                $grouped['booked'][] = $slot;
+                continue;
+            }
+
+            $grouped['available'][] = $slot;
+        }
+
+        $data['slot_groups'] = $grouped;
+        $data['slot_counts'] = array_map('count', $grouped);
+
         $this->call->view('/schedules/index', $data);
     }
 
@@ -125,7 +167,11 @@ class ScheduleController extends Controller {
         $this->lauth->require_login();
         $this->lauth->require_role('admin');
 
-        $data['doctors'] = $this->DoctorModel->all();
+        $data['doctors'] = $this->DoctorModel->all_active_doctors();
+        // Preserve old input after redirect on validation failure
+        $data['old'] = $_SESSION['old_slot'] ?? [];
+        unset($_SESSION['old_slot']);
+
         $this->call->view('/schedules/add', $data);
     }
 
@@ -134,10 +180,13 @@ class ScheduleController extends Controller {
         $this->lauth->require_login();
         $this->lauth->require_role('admin');
 
-        $doctor_id = $_POST['doctor_id'];
-        $date = $_POST['date'];
-        $start_time = $_POST['start_time'];
-        $end_time = $_POST['end_time'];
+        // Persist posted values so the form can repopulate after validation failure
+        $_SESSION['old_slot'] = $_POST;
+
+        $doctor_id = $_POST['doctor_id'] ?? '';
+        $date = $_POST['date'] ?? '';
+        $start_time = $_POST['start_time'] ?? '';
+        $end_time = $_POST['end_time'] ?? '';
 
         // VALIDATION
             // Past date not allowed
@@ -171,6 +220,8 @@ class ScheduleController extends Controller {
             'is_booked' => 0
         ];
         $this->ScheduleModel->create_slot($slot);
+        // Clear old input after success
+        unset($_SESSION['old_slot']);
         redirect('/schedules');
     }
 
@@ -180,7 +231,7 @@ class ScheduleController extends Controller {
         $this->lauth->require_role('admin');
 
         $data['slot'] = $this->ScheduleModel->db->table('doctor_slots')->where('id', $id)->get();
-        $data['doctors'] = $this->DoctorModel->all();
+        $data['doctors'] = $this->DoctorModel->all_active_doctors();
         $this->call->view('/schedules/edit', $data);
     }
 

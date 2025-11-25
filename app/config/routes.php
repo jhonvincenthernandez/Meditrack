@@ -97,6 +97,8 @@ $router->get('/appointments/doc_add', 'AppointmentController::doc_add');
 $router->post('/appointments/save_doc_add', 'AppointmentController::save_doc_add');
 $router->post('/appointments/save_admin', 'AppointmentController::save_admin');
 $router->post('/appointments/save', 'AppointmentController::save');
+$router->get('/appointments/getDoctorDates/{doctor_id}', 'AppointmentController::getDoctorDates');
+$router->get('/appointments/getAvailableSlots/{doctor_id}/{date}', 'AppointmentController::getAvailableSlots');
 // Staff add appointment
 $router->get('/appointments/staff_add', 'AppointmentController::staff_add');
 $router->post('/appointments/save_staff_add', 'AppointmentController::save_staff_add');
@@ -104,8 +106,18 @@ $router->get('/appointments/edit/{id}', 'AppointmentController::edit_form');
 $router->post('/appointments/update/{id}', 'AppointmentController::update');
 $router->get('/appointments/delete/{id}', 'AppointmentController::delete');
 // Status actions
-$router->get('/appointments/{id}/complete', 'AppointmentController::complete');
-$router->get('/appointments/{id}/cancel', 'AppointmentController::cancel');
+$router->match('/appointments/{id}/complete', 'AppointmentController::complete', ['GET','POST']);
+$router->post('/appointments/{id}/cancel', 'AppointmentController::cancel');
+$router->get('/appointments/checkout/{id}', 'AppointmentController::checkout');
+$router->get('/appointments/admin/checkout/{id}', 'AppointmentController::checkout_admin');
+$router->get('/appointments/doctor/checkout/{id}', 'AppointmentController::checkout_doctor');
+$router->get('/appointments/staff/checkout/{id}', 'AppointmentController::checkout_staff');
+$router->get('/appointments/payment-success', 'AppointmentController::payment_success');
+$router->get('/appointments/payment-failed', 'AppointmentController::payment_failed');
+$router->get('/payments/records', 'PaymentController::records');
+$router->get('/payments/records/pdf', 'PaymentController::export_pdf');
+
+$router->post('/webhooks/xendit/invoice', 'WebhookController::xendit_invoice');
 
 /* Doctor schedule management (admin) */
 $router->get('/schedules', 'ScheduleController::index'); // admin
@@ -118,9 +130,7 @@ $router->post('/schedules/update/{id}', 'ScheduleController::update');
 $router->get('/schedules/delete/{id}', 'ScheduleController::delete');
 $router->get('/schedules/doctor_delete/{id}', 'ScheduleController::doctor_delete');
 
-// Add these under appointment routes
-$router->get('/appointments/getDoctorDates/{doctor_id}', 'AppointmentController::getDoctorDates');
-$router->get('/appointments/getAvailableSlots/{doctor_id}/{date}', 'AppointmentController::getAvailableSlots');
+
 $router->get('/test', 'Welcome::testEmail');
 
 

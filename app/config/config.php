@@ -68,6 +68,17 @@ $config['ENVIRONMENT']             = 'development';
 
 /*
 |--------------------------------------------------------------------------
+| Default Timezone
+|--------------------------------------------------------------------------
+|
+| Set the timezone used throughout the application to keep date() and
+| strtotime() comparisons accurate.  Use any valid PHP timezone identifier.
+|
+*/
+$config['timezone']                = 'Asia/Manila';
+
+/*
+|--------------------------------------------------------------------------
 | Base Site URL
 |--------------------------------------------------------------------------
 |
@@ -307,4 +318,22 @@ $config['csrf_token_name']         = 'csrf_test_name';
 $config['csrf_cookie_name']        = 'csrf_cookie_name';
 $config['csrf_expire']             = 7200;
 $config['csrf_regenerate']         = FALSE;
+
+/*
+|--------------------------------------------------------------------------
+| MediTrack Payment defaults
+|--------------------------------------------------------------------------
+*/
+$config['default_consultation_fee'] = 1500;
+
+$config['xendit'] = [
+	'base_url' => 'https://api.xendit.co',
+	'secret_key' => getenv('XENDIT_SECRET_KEY') ?: 'xnd_development_CsB8on6R23wYLyCSQYw2ngABh0DrKXJKcSDlVGSyTGKS935mYPKrOUjlz6ytgR',
+	'public_key' => getenv('XENDIT_PUBLIC_KEY') ?: 'xnd_public_development_xxx',
+	'callback_token' => getenv('XENDIT_CALLBACK_TOKEN') ?: 'set-a-secure-token',
+	'auto_expiry_minutes' => 120,
+	'success_redirect_url' => rtrim($config['base_url'], '/') . '/appointments/payment-success',
+	'failure_redirect_url' => rtrim($config['base_url'], '/') . '/appointments/payment-failed',
+	'skip_ssl' => (getenv('XENDIT_SKIP_SSL') !== false) ? filter_var(getenv('XENDIT_SKIP_SSL'), FILTER_VALIDATE_BOOL) : TRUE,
+];
 ?>

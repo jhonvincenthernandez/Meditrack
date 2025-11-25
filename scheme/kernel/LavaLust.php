@@ -45,6 +45,12 @@ require_once SYSTEM_DIR . 'kernel/Routine.php';
  */
 define('BASE_URL', config_item('base_url'));
 
+// Align PHP date/time functions with the configured timezone (if provided)
+$timezone = config_item('timezone');
+if (!empty($timezone)) {
+	date_default_timezone_set($timezone);
+}
+
 /**
  * Composer (Autoload)
  */

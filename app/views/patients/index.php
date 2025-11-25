@@ -10,25 +10,7 @@
 </head>
 <body>
 
-<!-- Sidebar -->
-<aside class="sidebar">
-  <a href="<?= base_url(); ?>/" class="d-flex align-items-center mb-4 text-decoration-none">
-    <div class="brand-logo"></div>
-    <div class="ms-2">
-      <div class="brand-title">MediTrack+</div>
-      <small class="text-muted">Clinic Manager</small>
-    </div>
-  </a>
-  <nav class="nav flex-column">
-    <a class="nav-link" href="<?= base_url(); ?>/dashboard_admin">🏠 Dashboard</a>
-    <a class="nav-link" href="<?= base_url(); ?>/users">👥 Users</a>
-    <a class="nav-link active" href="<?= base_url(); ?>/patients">🧾 Patients</a>
-    <a class="nav-link" href="<?= base_url(); ?>/doctors">🩺 Doctors</a>
-    <a class="nav-link" href="<?= base_url(); ?>/appointments">📅 Appointments</a>
-    <a class="nav-link" href="<?= base_url(); ?>/schedules">📆 Schedules</a>
-    <a href="<?= site_url('auth/logout'); ?>" class="btn btn-danger mt-3">Logout</a>
-  </nav>
-</aside>
+<?php include APP_DIR . 'views/_sidebar.php'; ?>
 
 <!-- Main Content -->
 <div class="main">
@@ -40,6 +22,12 @@
   </div>
 
   <div class="card-soft">
+    <?php if (!empty($flash_success)): ?>
+      <div class="alert alert-success"><?= htmlspecialchars($flash_success) ?></div>
+    <?php endif; ?>
+    <?php if (!empty($flash_error)): ?>
+      <div class="alert alert-danger"><?= htmlspecialchars($flash_error) ?></div>
+    <?php endif; ?>
     <!-- Search -->
     <form class="d-flex mb-3" method="get" action="<?= base_url(); ?>/patients">
       <input name="q" class="form-control form-control-sm me-2" placeholder="Search by name,age,gender or contact" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">

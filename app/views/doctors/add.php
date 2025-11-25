@@ -17,32 +17,49 @@
 
     <div class="p-4">
   <div class="card-soft container-narrow">
-        <form method="post" action="<?= base_url(); ?>/doctors/save">
+        <form method="post" action="<?= base_url(); ?>/doctors/save" class="needs-validation" novalidate>
+          <?php if(!empty($errors) && is_array($errors)): ?>
+            <div class="alert alert-danger">
+              <?php foreach($errors as $err): ?>
+                <div><?= htmlspecialchars($err) ?></div>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
           <div class="mb-3">
-            <label class="form-label">Link to User Account</label>
-            <select id="user_id" name="user_id" class="form-select" required>
+            <label class="form-label">Link to User Account <small class="text-muted">(optional)</small></label>
+            <select id="user_id" name="user_id" class="form-select">
               <option value="">-- Select User or Add Another User --</option>
               <?php foreach($users as $u): ?>
-                <option value="<?= $u['id'] ?>" data-name="<?= htmlspecialchars($u['name']) ?>"><?= htmlspecialchars($u['name']) ?> (<?= $u['email'] ?>)</option>
+                <option value="<?= $u['id'] ?>" data-name="<?= htmlspecialchars($u['name']) ?>" <?= (isset($old['user_id']) && $old['user_id'] == $u['id']) ? 'selected' : '' ?>><?= htmlspecialchars($u['name']) ?> (<?= $u['email'] ?>)</option>
               <?php endforeach; ?>
             </select>
           </div>
-
           <div class="mb-3">
-            <label class="form-label">Doctor Name</label>
-            <input type="text" id="doctor_name_display" class="form-control" placeholder="Select a user to populate" disabled>
-            <input type="hidden" id="doctor_name" name="name" value="">
+            <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
+            <input type="text" id="doctor_name_display" name="name" class="form-control" placeholder="Full name" required value="<?= htmlspecialchars($old['name'] ?? '') ?>">
+            
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Specialty</label>
-            <input type="text" name="specialty" class="form-control">
+            <label class="form-label">Specialty <span class="text-danger">*</span></label>
+            <select name="specialty" id="specialty" class="form-select" required>
+              <option value="">-- Select specialty --</option>
+              <?php foreach($specialties as $s): ?>
+              <option value="<?= htmlspecialchars($s) ?>" <?= (isset($old['specialty']) && $old['specialty'] === $s) ? 'selected' : '' ?>><?= htmlspecialchars($s) ?></option>
+              <?php endforeach; ?>
+            </select>
+            
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Contact</label>
-            <input type="text" maxlength="11" name="contact" class="form-control">
+            <label class="form-label">Contact <span class="text-danger">*</span></label>
+            <input type="text" name="contact" id="contact" pattern="^09[0-9]{9}$" maxlength="11" class="form-control" required value="<?= htmlspecialchars($old['contact'] ?? '') ?>">
+            <div class="form-text">Format: 09xxxxxxxxx</div>
+            
           </div>
+
+          <?php if(!empty($flash_success)): ?><div class="alert alert-success"><?= htmlspecialchars($flash_success) ?></div><?php endif; ?>
+          <?php if(!empty($flash_error)): ?><div class="alert alert-danger"><?= htmlspecialchars($flash_error) ?></div><?php endif; ?>
 
           <div class="d-flex gap-2">
             <button class="btn btn-primary">Save</button>
@@ -53,18 +70,35 @@
       <script>
       // Keep doctor name in sync with selected user
       (function(){
-        var userSel = document.getElementById('user_id');
-        var nameInput = document.getElementById('doctor_name');
-        var nameDisplay = document.getElementById('doctor_name_display');
+  var userSel = document.getElementById('user_id');
+  var nameDisplay = document.getElementById('doctor_name_display');
         function syncName(){
           var opt = userSel.options[userSel.selectedIndex];
           var n = opt && opt.getAttribute('data-name') ? opt.getAttribute('data-name') : '';
-          nameInput.value = n;
-          nameDisplay.value = n;
+          // when a user is selected, we will overwrite the name input value
+          if (n !== '') {
+            nameDisplay.value = n;
+          }
         }
         userSel && userSel.addEventListener('change', syncName);
         // initialize on load
         syncName();
+      })();
+
+      // Bootstrap client-side validation
+      (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+          .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated')
+            }, false)
+          })
       })();
       </script>
     </div>

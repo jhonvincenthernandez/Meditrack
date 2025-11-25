@@ -78,13 +78,23 @@ class ScheduleModel extends Model {
 
     // Get distinct future dates for a doctor's available (not booked) slots
     public function get_doctor_dates($doctor_id) {
-        // Only expose dates with future, unbooked slots.
-        $sql = "SELECT DATE(date) AS date
-                FROM {$this->table}
-                WHERE doctor_id = ?
-                  AND is_booked = 0
-                  AND (date > CURDATE() OR (date = CURDATE() AND start_time > CURTIME()))
-                GROUP BY DATE(date)
+        // Only expose dates with future, unbooked slots that are not tied to completed/cancelled appointments.
+        $sql = "SELECT DATE(s.date) AS date
+                FROM {$this->table} AS s
+                LEFT JOIN (
+                    SELECT t1.slot_id, t1.status
+                    FROM appointments t1
+                    INNER JOIN (
+                        SELECT slot_id, MAX(id) AS max_id
+                        FROM appointments
+                        GROUP BY slot_id
+                    ) t2 ON t1.id = t2.max_id
+                ) AS a ON a.slot_id = s.id
+                WHERE s.doctor_id = ?
+                  AND s.is_booked = 0
+                  AND (s.date > CURDATE() OR (s.date = CURDATE() AND s.start_time > CURTIME()))
+                  AND (a.status IS NULL OR a.status NOT IN ('completed','cancelled'))
+                GROUP BY DATE(s.date)
                 ORDER BY date ASC";
         $stmt = $this->db->raw($sql, [$doctor_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -92,15 +102,33 @@ class ScheduleModel extends Model {
 
     // Get available slots for a doctor on a given date
     public function get_available_slots($doctor_id, $date) {
-        $qb = $this->db->table($this->table)
-            ->where('doctor_id', $doctor_id)
-            ->where('date', $date)
-            ->where('is_booked', 0);
-        // If requesting today's date, filter out slots that already started
+        $params = [$doctor_id, $date];
+        $timeFilter = '';
+
         if ($date === date('Y-m-d')) {
-            $qb->where('start_time', '>', date('H:i:s'));
+            $timeFilter = ' AND s.start_time > ?';
+            $params[] = date('H:i:s');
         }
-        return $qb->order_by('start_time', 'ASC')->get_all();
+
+        $sql = "SELECT s.*
+                FROM {$this->table} AS s
+                LEFT JOIN (
+                    SELECT t1.slot_id, t1.status
+                    FROM appointments t1
+                    INNER JOIN (
+                        SELECT slot_id, MAX(id) AS max_id
+                        FROM appointments
+                        GROUP BY slot_id
+                    ) t2 ON t1.id = t2.max_id
+                ) AS a ON a.slot_id = s.id
+                WHERE s.doctor_id = ?
+                  AND s.date = ?
+                  AND s.is_booked = 0
+                  AND (a.status IS NULL OR a.status NOT IN ('completed','cancelled'))" . $timeFilter . "
+                ORDER BY s.start_time ASC";
+
+        $stmt = $this->db->raw($sql, $params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Get a slot by id

@@ -15,24 +15,7 @@
 <body>
 
 <!-- Sidebar -->
-<aside class="sidebar">
-    <a href="<?= base_url(); ?>/" class="d-flex align-items-center mb-4 text-decoration-none">
-        <div class="brand-logo"></div>
-        <div class="ms-2">
-            <div class="brand-title">MediTrack+</div>
-            <small class="text-muted">Clinic Manager</small>
-        </div>
-    </a>
-    <nav class="nav flex-column">
-        <a class="nav-link" href="<?= base_url(); ?>/dashboard_admin">🏠 Dashboard</a>
-        <a class="nav-link" href="<?= base_url(); ?>/users">👥 Users</a>
-        <a class="nav-link" href="<?= base_url(); ?>/patients">🧾 Patients</a>
-        <a class="nav-link" href="<?= base_url(); ?>/doctors">🩺 Doctors</a>
-        <a class="nav-link" href="<?= base_url(); ?>/appointments">📅 Appointments</a>
-        <a class="nav-link active" href="<?= base_url(); ?>/schedules">📆 Schedules</a>
-        <a href="<?= site_url('auth/logout'); ?>" class="btn btn-danger mt-3">Logout</a>
-    </nav>
- </aside>
+<?php include APP_DIR . 'views/_sidebar.php'; ?>
 
 <!-- Main -->
 <div class="main">
@@ -59,56 +42,133 @@
             <h5 class="m-0">Doctor Slots</h5>
             <a href="<?= base_url(); ?>/schedules/add_form" class="btn btn-primary">+ Add Slot</a>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Date</th>
-                        <th>Doctor</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($slots)): ?>
-                        <?php foreach ($slots as $s): ?>
+
+        <?php
+            $groups = $slot_groups ?? [
+                'available' => [],
+                'booked' => [],
+                'past' => [],
+                'completed' => [],
+                'cancelled' => [],
+            ];
+
+            $counts = $slot_counts ?? array_map('count', $groups);
+
+            $tabConfig = [
+                'available' => [
+                    'label' => 'Available',
+                    'summary_class' => 'bg-success bg-opacity-25 border border-success-subtle text-success',
+                    'badge_class' => 'text-bg-success',
+                    'badge_label' => 'Available',
+                    'empty' => 'No available slots right now.',
+                ],
+                'booked' => [
+                    'label' => 'Booked',
+                    'summary_class' => 'bg-danger bg-opacity-25 border border-danger-subtle text-danger',
+                    'badge_class' => 'text-bg-danger',
+                    'badge_label' => 'Booked',
+                    'empty' => 'No booked slots at the moment.',
+                ],
+                'past' => [
+                    'label' => 'Past',
+                    'summary_class' => 'bg-secondary bg-opacity-25 border border-secondary-subtle text-secondary',
+                    'badge_class' => 'text-bg-secondary',
+                    'badge_label' => 'Past',
+                    'empty' => 'No past slots found.',
+                ],
+                'completed' => [
+                    'label' => 'Completed',
+                    'summary_class' => 'bg-success bg-opacity-10 border border-success-subtle text-success',
+                    'badge_class' => 'text-bg-success',
+                    'badge_label' => 'Done',
+                    'empty' => 'No completed slots yet.',
+                ],
+                'cancelled' => [
+                    'label' => 'Cancelled',
+                    'summary_class' => 'bg-secondary bg-opacity-25 border border-secondary-subtle text-secondary',
+                    'badge_class' => 'text-bg-secondary',
+                    'badge_label' => 'Cancelled',
+                    'empty' => 'No cancelled slots recorded.',
+                ],
+            ];
+
+            $tabKeys = array_keys($tabConfig);
+            $activeKey = $tabKeys[0] ?? 'available';
+        ?>
+
+        <div class="row g-3 mb-3">
+            <?php foreach ($tabConfig as $key => $config): ?>
+                <div class="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    <div class="status-pill <?= $config['summary_class']; ?> rounded p-3 h-100">
+                        <div class="fw-semibold text-uppercase small"><?= htmlspecialchars($config['label']); ?></div>
+                        <div class="display-6 mb-0"><?= (int)($counts[$key] ?? 0); ?></div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <ul class="nav nav-pills mb-3" id="scheduleTab" role="tablist">
+            <?php foreach ($tabConfig as $key => $config):
+                $active = $key === $activeKey;
+            ?>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link<?= $active ? ' active' : ''; ?>" id="<?= $key; ?>-tab" data-bs-toggle="pill" data-bs-target="#<?= $key; ?>-pane" type="button" role="tab" aria-controls="<?= $key; ?>-pane" aria-selected="<?= $active ? 'true' : 'false'; ?>">
+                    <?= htmlspecialchars($config['label']); ?>
+                    <span class="badge bg-light text-dark ms-2"><?= (int)($counts[$key] ?? 0); ?></span>
+                </button>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <div class="tab-content" id="scheduleTabContent">
+            <?php foreach ($tabConfig as $key => $config):
+                $active = $key === $activeKey;
+                $rows = $groups[$key] ?? [];
+            ?>
+            <div class="tab-pane fade<?= $active ? ' show active' : ''; ?>" id="<?= $key; ?>-pane" role="tabpanel" aria-labelledby="<?= $key; ?>-tab" tabindex="0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <td><?= htmlspecialchars($s['date']); ?></td>
-                                <td><?= htmlspecialchars($s['doctor_name']); ?> — <?= htmlspecialchars($s['specialty']); ?></td>
-                                <td><?= htmlspecialchars($s['start_time']); ?></td>
-                                <td><?= htmlspecialchars($s['end_time']); ?></td>
-                                <td>
-                                    <?php
-                                        $now = time();
-                                        $slotEndTs = strtotime($s['date'].' '.$s['end_time']);
-                                        $isPast = $slotEndTs !== false && $slotEndTs < $now;
-                                        $apptStatus = $s['appt_status'] ?? null;
-                                    ?>
-                                    <?php if ($apptStatus === 'completed'): ?>
-                                        <span class="badge text-bg-success">Done</span>
-                                    <?php elseif ($apptStatus === 'cancelled'): ?>
-                                        <span class="badge text-bg-secondary">Cancelled</span>
-                                    <?php elseif ($isPast): ?>
-                                        <span class="badge bg-secondary">Past</span>
-                                    <?php elseif (!empty($s['is_booked'])): ?>
-                                        <span class="badge bg-danger">Booked</span>
-                                    <?php else: ?>
-                                        <span class="badge bg-success">Available</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <a href="<?= base_url(); ?>/schedules/edit_form/<?= $s['id']; ?>" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                    <a href="<?= base_url(); ?>/schedules/delete/<?= $s['id']; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this slot?')">Delete</a>
-                                </td>
+                                <th>Date</th>
+                                <th>Doctor</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr><td colspan="6" class="text-center text-muted">No slots found</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($rows)): ?>
+                                <?php foreach ($rows as $s): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($s['date']); ?></td>
+                                        <td><?= htmlspecialchars($s['doctor_name'] ?? 'Unknown'); ?><?= !empty($s['specialty']) ? ' — '.htmlspecialchars($s['specialty']) : ''; ?></td>
+                                        <td><?= htmlspecialchars($s['start_time']); ?></td>
+                                        <td><?= htmlspecialchars($s['end_time']); ?></td>
+                                        <td><span class="badge <?= $config['badge_class']; ?>"><?= htmlspecialchars($config['badge_label']); ?></span></td>
+                                        <td>
+                                            <?php if ($key === 'available'): ?>
+                                                <a href="<?= base_url(); ?>/schedules/edit_form/<?= (int)$s['id']; ?>" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                                <a href="<?= base_url(); ?>/schedules/delete/<?= (int)$s['id']; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this slot?')">Delete</a>
+                                            <?php elseif ($key === 'past'): ?>
+                                                <a href="<?= base_url(); ?>/schedules/delete/<?= (int)$s['id']; ?>" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Remove this expired slot?')">Remove</a>
+                                            <?php else: ?>
+                                                <span class="text-muted small">—</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4"><?= htmlspecialchars($config['empty']); ?></td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>

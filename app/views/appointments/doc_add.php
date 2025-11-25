@@ -6,22 +6,40 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<?= base_url().'public/assets/theme.css'; ?>">
 </head>
 <body>
-  <div class="sidebar"><h5>MediTrack+</h5><hr></div>
+  <!-- Sidebar -->
+<aside class="sidebar p-3">
+  <a href="<?= base_url(); ?>/" class="d-flex align-items-center mb-4 text-decoration-none">
+    <div class="brand-logo"></div>
+    <div class="ms-2"><div class="brand-title">MediTrack+</div><small class="text-muted">Clinic Doctor</small></div>
+  </a>
+  <nav class="nav flex-column">
+    <a class="nav-link active" href="<?= base_url(); ?>/dashboard_doctor">🏠 Dashboard</a>
+    <a class="nav-link" href="<?= base_url(); ?>/payments/records">💰 Payment Records</a>
+    <a class="nav-link" href="<?= base_url(); ?>/appointments/doc_add">➕ Add Appointment</a>
+    <a class="nav-link" href="<?= base_url(); ?>/schedules/manage">📆 Manage Slots</a>
+    <a href="<?= site_url('auth/logout'); ?>" class="btn btn-danger mt-3">Logout</a>
+  </nav>
+</aside>
 
   <div class="main p-4">
     <div class="card-soft container-narrow">
+      <div class="alert alert-info small">
+        Each saved booking collects a payment upfront via Xendit. Patients will receive the checkout link immediately.
+      </div>
       <form method="post" action="<?= base_url(); ?>/appointments/save_doc_add">
         <input type="hidden" name="doctor_id" value="<?= htmlspecialchars($doctor_id ?? '') ?>">
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label">Patient</label>
-            <select name="patient_id" class="form-select" required>
-              <option value="">Select Patient</option>
+            <label class="form-label">Patient <small class="text-muted">(searchable)</small></label>
+            <select name="patient_id" id="patient_select" class="form-select" required>
+              <option value="">Search patient...</option>
               <?php if(!empty($patients)): foreach($patients as $p): ?>
-                <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['name']) ?></option>
+                <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['name']) ?><?php if(!empty($p['contact'])): ?> - <?= htmlspecialchars($p['contact']); ?><?php endif; ?></option>
               <?php endforeach; endif; ?>
             </select>
           </div>
@@ -33,11 +51,16 @@
             </select>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-6">
             <label class="form-label">Available Slot</label>
             <select name="slot_id" id="slot_id" class="form-select" required>
               <option value="">-- Choose Available Slot --</option>
             </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Consultation Fee (PHP)</label>
+            <input type="number" name="consultation_fee" class="form-control" step="0.01" min="0" value="<?= htmlspecialchars(config_item('default_consultation_fee') ?? 1500); ?>" required>
           </div>
 
           <div class="col-12">
@@ -98,6 +121,17 @@ dateEl.addEventListener('change', async function() {
 loadDates();
 </script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="<?= base_url().'public/assets/ui.js'; ?>"></script>
+<script>
+$(document).ready(function() {
+  $('#patient_select').select2({
+    theme: 'bootstrap-5',
+    placeholder: 'Type to search patient...',
+    allowClear: true,
+    width: '100%'
+  });
+});
+</script>
 </body>
 </html>

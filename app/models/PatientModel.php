@@ -27,6 +27,7 @@ class PatientModel extends Model {
             ->or_like('age', $keyword)
             ->or_like('gender', $keyword)
             ->or_like('contact', $keyword)
+            ->or_like('medical_history', $keyword)
             ->get_all();
     }
 }
