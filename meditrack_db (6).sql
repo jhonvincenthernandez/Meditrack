@@ -61,12 +61,6 @@ CREATE TABLE IF NOT EXISTS `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `patient_id`, `doctor_id`, `slot_id`, `notes`, `amount`, `currency`, `invoice_id`, `invoice_url`, `checkout_url`, `payment_status`, `xendit_status`, `payment_due_at`, `paid_at`, `payment_id`, `consultation_fee`, `status`, `cancellation_reason`, `cancelled_at`, `cancelled_by`, `completed_at`) VALUES
-(90, 4, 7, 180, 'ok', 1500.00, 'PHP', '69196dca26d6bc37164d7ca6', 'https://checkout-staging.xendit.co/web/69196dca26d6bc37164d7ca6', 'https://checkout-staging.xendit.co/web/69196dca26d6bc37164d7ca6', 'cancelled', 'CANCELLED', '2025-11-16 16:23:07', NULL, 20, 1500.00, 'cancelled', 'sorry', '2025-11-16 14:23:17', 'Administrator', NULL),
-(91, 4, 7, 181, 'ok', 1500.00, 'PHP', '69196e18fbcbf149203e69d6', 'https://checkout-staging.xendit.co/web/69196e18fbcbf149203e69d6', 'https://checkout-staging.xendit.co/web/69196e18fbcbf149203e69d6', 'paid', 'PAID', '2025-11-16 16:24:24', '2025-11-16 14:24:42', 21, 1500.00, 'completed', NULL, NULL, NULL, '2025-11-19 13:15:34'),
-(92, 4, 7, 182, 'ok', 1500.00, 'PHP', '69196e7926d6bc37164d7d2d', 'https://checkout-staging.xendit.co/web/69196e7926d6bc37164d7d2d', 'https://checkout-staging.xendit.co/web/69196e7926d6bc37164d7d2d', 'paid', 'MANUAL_OVERRIDE', '2025-11-16 16:26:02', '2025-11-16 14:26:25', 22, 1500.00, 'completed', NULL, NULL, NULL, '2025-11-16 14:26:25'),
-(93, 4, 7, 183, 'ok', 1500.00, 'PHP', '69196f0826d6bc37164d7d8e', 'https://checkout-staging.xendit.co/web/69196f0826d6bc37164d7d8e', 'https://checkout-staging.xendit.co/web/69196f0826d6bc37164d7d8e', 'paid', 'PAID', '2025-11-16 16:28:25', '2025-11-16 14:28:35', 23, 1500.00, 'completed', NULL, NULL, NULL, '2025-11-20 12:46:09'),
-(96, 4, 7, 184, 'ok', 500.00, 'PHP', '691d549326d6bc371653153c', 'https://checkout-staging.xendit.co/web/691d549326d6bc371653153c', 'https://checkout-staging.xendit.co/web/691d549326d6bc371653153c', 'paid', 'PAID', '2025-11-19 15:24:36', '2025-11-19 13:25:12', 24, 500.00, 'completed', NULL, NULL, NULL, '2025-11-21 16:35:26');
 
 -- --------------------------------------------------------
 

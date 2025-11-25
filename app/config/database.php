@@ -59,11 +59,11 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 $database['main'] = array(
     'driver'	=> 'mysql',
-    'hostname'	=> 'localhost',
+    'hostname'	=> 'sql12.freesqldatabase.com',
     'port'		=> '3306',
-    'username'	=> 'root',
-    'password'	=> '',
-    'database'	=> 'meditrack_db',
+    'username'	=> 'sql12809303',
+    'password'	=> 'M1AlAnI51M',
+    'database'	=> 'sql12809303',
     'charset'	=> 'utf8',
     'dbprefix'	=> '',
     // Optional for SQLite
