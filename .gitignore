@@ -17,3 +17,4 @@ runtime/*
 *.stTheme.cache
 *.sublime-workspace
 *.sublime-project
+/vendor/

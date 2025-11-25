@@ -1,4 +1,16 @@
 {
+    "name": "vincenthernandez/finalcurrrentlava-lustmeditrack",
+    "autoload": {
+        "psr-4": {
+            "Vincenthernandez\\FinalcurrrentlavaLustmeditrack\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "jhonvincenthernandez",
+            "email": "jhonvincenthernandez9@gamil.com"
+        }
+    ],
     "require": {
         "php": "^8.0"
     }
