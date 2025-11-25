@@ -23,6 +23,9 @@ COPY . /var/www/html
 # If you want composer install to run during build
 RUN composer install --no-dev --optimize-autoloader
 
+# Install dependencies for the app directory
+RUN cd app && composer install --no-dev --optimize-autoloader
+
 # Set permissions (adjust as needed)
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type f -exec chmod 644 {} \; \
