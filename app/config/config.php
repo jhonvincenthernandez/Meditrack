@@ -90,7 +90,7 @@ $config['timezone']                = 'Asia/Manila';
 | WARNING: You MUST set this value!
 |
 */
-$config['base_url'] 				= 'https://meditrack-e4po.onrender.com/';
+$config['base_url'] 				= 'https://meditrack-final.onrender.com/';
 
 /*
 |--------------------------------------------------------------------------
